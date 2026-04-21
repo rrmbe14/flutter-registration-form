@@ -1,0 +1,34 @@
+targets:
+  $default:
+    builders:
+
+      injectable_generator|injectable_config_builder:
+        generate_for:
+          include:
+            - lib/core/service_registrar.dart
+
+      retrofit_generator:
+        generate_for:
+          include:
+            - lib/features/**/*_api.dart
+
+      auto_route_generator:auto_route_generator: # this for @RoutePage
+        options:
+          enable_cached_builds: true
+        generate_for:
+          - lib/**/presentation/**/**_view.dart
+
+      auto_route_generator:auto_router_generator: # this for @AutoRouterConfig
+        options:
+          enable_cached_builds: true
+        generate_for:
+          - lib/core/presentation/navigation/navigation_router.dart
+
+      json_serializable:
+        generate_for:
+          include:
+            - lib/**/models/*.dart
+
+      drift_dev:
+        options:
+          data_class_to_companions: false
