@@ -1,21 +1,26 @@
 # Multi-Page Registration Form
 
-A little Flutter app that walks a user through a two-step sign-up, then proudly shows off everything they entered back on the home screen. Built as the Week 2 capstone — it ties together navigation, forms, validation, and `setState`.
+## Description
 
-## What it does
+A Flutter application demonstrating navigation and form handling across multiple screens. Users can register by filling out a two-page form with validation, and their submitted details are surfaced back on the home screen. Built as the Week 2 capstone — it ties together navigation, forms, validation, and `setState`.
 
-- **Home screen** welcomes you in and (after you register) shows your submitted info in a tidy card.
-- **Page 1** collects the basics: name, email, phone, and a password you have to confirm.
-- **Page 2** gathers a few more details: age, gender, country, and an optional bio.
-- Hit **Submit** and the data hops all the way back to the home screen. 🎉
+## Features
+
+- Multi-screen navigation
+- Form validation on all fields
+- Data passing between screens
+- Password confirmation
+- Age verification
+- Gender selection
+- Display of submitted registration data
 
 ## Screens
 
-1. **Home** — welcome + results view
-2. **Registration Page 1** — personal info form
-3. **Registration Page 2** — additional info form
+1. **Home Screen**: Welcome page with navigation to registration and data display
+2. **Registration Page 1**: Personal information form (name, email, phone, password)
+3. **Registration Page 2**: Additional information form (age, gender, country, bio)
 
-## Validation rules
+## Validation Rules
 
 | Field | Rule |
 |---|---|
@@ -30,27 +35,53 @@ A little Flutter app that walks a user through a two-step sign-up, then proudly 
 
 ## Screenshots
 
-A walkthrough of the full registration flow lives in the [`screenshots/`](screenshots/) directory as an animated GIF:
+A walkthrough of the registration flow, in order:
 
-![Registration form walkthrough](screenshots/formregistrationcapture.gif)
+| 1. Get Started | 2. Get Started (Dark) |
+|:---:|:---:|
+| ![Get Started](screenshots/01_GetStarted.png) | ![Get Started Dark](screenshots/02_GetStarted_Dark.png) |
+| **3. Registration Page 1** | **4. Registration Page 2** |
+| ![Register Form 01](screenshots/03_Register_Form_01.png) | ![Register Form 02](screenshots/04_Register_Form_02.png) |
+| **5. Home — Submitted Data** | |
+| ![Home Submitted Data](screenshots/05_Home_Submitted_Data.png) | |
 
-The capture covers:
+## How to Run
 
-- Home screen (empty state)
-- Registration Page 1
-- Registration Page 2
-- Home screen (with submitted data)
+1. Clone the repository
+2. Run `flutter pub get`
+3. Run `flutter run`
 
-## Run it
+## Project Structure
 
-```bash
-flutter pub get
-flutter run
+The `registration_form/lib/` directory is organized into clear layers — entry point, route-level screens, reusable widgets, data models, and pure-logic utilities:
+
+```
+lib/
+├── main.dart                          # App entry point; sets up MaterialApp + theme toggle
+├── models/
+│   └── user_data.dart                 # Immutable UserData model passed back from the form
+├── screens/
+│   ├── home_screen.dart               # Welcome screen; launches registration & renders submitted data
+│   ├── registration_page1.dart        # Page 1 form: name, email, phone, password, confirm
+│   └── registration_page2.dart        # Page 2 form: age, gender, country, bio + Submit
+├── utils/
+│   └── validators.dart                # Centralized FormFieldValidator<String> functions
+└── widgets/
+    ├── gender_selector.dart           # Radio-group gender picker (stateless, parent-controlled)
+    ├── info_row.dart                  # Label/value row used inside summary cards
+    ├── labeled_text_field.dart        # Outlined TextFormField with icon + password toggle
+    └── user_data_card.dart            # Card that displays a submitted UserData record
 ```
 
-That's it — pick a device and you're off.
+**How the pieces connect:**
 
-## What I learned
+- `main.dart` boots `RegistrationFormApp`, owns the `ThemeMode` notifier, and shows `HomeScreen` as the root route.
+- `HomeScreen` pushes `RegistrationPage1`; on a successful `Navigator.pop` with data, it stores a `UserData` and renders it via `UserDataCard`.
+- `RegistrationPage1` collects personal info and pushes `RegistrationPage2`, passing the Page 1 fields forward.
+- `RegistrationPage2` collects the rest, builds a `UserData`, and pops twice to return the record to `HomeScreen`.
+- `widgets/` and `utils/` are leaf modules — they have no knowledge of routes or screens, which keeps them reusable and easy to test.
+
+## What I Learned
 
 Week 2 packed in a lot, and this project was where it all clicked:
 
@@ -60,7 +91,7 @@ Week 2 packed in a lot, and this project was where it all clicked:
 - **`setState` is simpler than I expected** — keep state local, lift it up only when you have to, never put `async` work inside the callback.
 - **Null-check navigation results** — users hit back buttons, and the returned data will be `null`. Handle it gracefully.
 
-## Challenges along the way
+## Challenges Faced
 
 - Getting password confirmation right meant reaching into `_passwordController.text` from inside the confirm field's validator — a small "aha" moment about how controllers live alongside the form.
 - Remembering to pop **twice** (once for Page 2, once for Page 1) to land back at Home with the data in hand.

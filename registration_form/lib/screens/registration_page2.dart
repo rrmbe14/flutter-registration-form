@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:registration_form/models/user_data.dart';
+import 'package:registration_form/utils/validators.dart';
+import 'package:registration_form/widgets/gender_selector.dart';
+import 'package:registration_form/widgets/labeled_text_field.dart';
 
 /// Step 2 of registration — the finishing touches.
 ///
@@ -48,7 +51,7 @@ class _RegistrationPage2State extends State<RegistrationPage2> {
         name: widget.name,
         email: widget.email,
         phone: widget.phone,
-        age: _ageController.text,
+        age: int.parse(_ageController.text),
         gender: _selectedGender,
         country: _countryController.text,
         bio: _bioController.text.trim(),
@@ -60,10 +63,16 @@ class _RegistrationPage2State extends State<RegistrationPage2> {
     }
   }
 
+  void _onGenderChanged(String? value) {
+    if (value != null) {
+      setState(() => _selectedGender = value);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registration — Step 2 of 2')),
+      appBar: AppBar(title: const Text('Registration - Step 2 of 2')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -73,105 +82,54 @@ class _RegistrationPage2State extends State<RegistrationPage2> {
             children: <Widget>[
               const LinearProgressIndicator(value: 1.0),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Step 2 of 2',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: Theme.of(context).textTheme.labelMedium,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _ageController,
+                label: 'Age',
+                icon: Icons.cake,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Age',
-                  prefixIcon: Icon(Icons.cake),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your age';
-                  }
-                  final int? age = int.tryParse(value);
-                  if (age == null) {
-                    return 'Please enter a valid number';
-                  }
-                  if (age < 18) {
-                    return 'You must be at least 18 years old';
-                  }
-                  return null;
-                },
+                validator: Validators.age,
               ),
               const SizedBox(height: 16),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  'Gender',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-              ),
-              RadioGroup<String>(
-                groupValue: _selectedGender,
+              GenderSelector(
+                selectedGender: _selectedGender,
                 onChanged: _onGenderChanged,
-                child: const Column(
-                  children: <Widget>[
-                    RadioListTile<String>(title: Text('Male'), value: 'Male'),
-                    RadioListTile<String>(title: Text('Female'), value: 'Female'),
-                    RadioListTile<String>(title: Text('Other'), value: 'Other'),
-                  ],
-                ),
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _countryController,
+                label: 'Country',
+                icon: Icons.public,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Country',
-                  prefixIcon: Icon(Icons.public),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your country';
-                  }
-                  return null;
-                },
+                validator: Validators.country,
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _bioController,
-                maxLines: 4,
+                label: 'Bio (optional)',
+                icon: Icons.edit_note,
                 keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  labelText: 'Bio (optional)',
-                  prefixIcon: Icon(Icons.edit_note),
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
+                maxLines: 4,
+                alignLabelWithHint: true,
               ),
               const SizedBox(height: 32),
 
-              ElevatedButton.icon(
+              ElevatedButton(
                 onPressed: _submitForm,
-                icon: const Icon(Icons.check_circle),
-                label: const Text('Submit'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
+                child: const Text('Submit'),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  void _onGenderChanged(String? value) {
-    if (value != null) {
-      setState(() => _selectedGender = value);
-    }
   }
 }

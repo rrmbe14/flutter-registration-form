@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:registration_form/screens/registration_page2.dart';
+import 'package:registration_form/utils/validators.dart';
+import 'package:registration_form/widgets/labeled_text_field.dart';
 
 /// Step 1 of registration — the essentials.
 ///
@@ -22,9 +24,6 @@ class _RegistrationPage1State extends State<RegistrationPage1> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -40,7 +39,6 @@ class _RegistrationPage1State extends State<RegistrationPage1> {
       /// Hop over to page 2. Page 2 does its own double-pop on submit,
       /// so this push simply returns when both pages are gone — no
       /// result to inspect here.
-      /// `Navigator.push` (Flutter framework) returns a `Future<T?>` that completes when the pushed route is popped.
       await Navigator.push<void>(
         context,
         MaterialPageRoute<void>(
@@ -58,7 +56,7 @@ class _RegistrationPage1State extends State<RegistrationPage1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registration — Step 1 of 2')),
+      appBar: AppBar(title: const Text('Registration - Step 1 of 2')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -68,137 +66,63 @@ class _RegistrationPage1State extends State<RegistrationPage1> {
             children: <Widget>[
               const LinearProgressIndicator(value: 0.5),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Step 1 of 2',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: Theme.of(context).textTheme.labelMedium,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _nameController,
+                label: 'Full Name',
+                icon: Icons.person,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  if (value.trim().length < 3) {
-                    return 'Name must be at least 3 characters';
-                  }
-                  return null;
-                },
+                validator: Validators.name,
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _emailController,
+                label: 'Email',
+                icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                  if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
+                validator: Validators.email,
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _phoneController,
+                label: 'Phone Number',
+                icon: Icons.phone,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  if (value.trim().length < 10) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
-                },
+                validator: Validators.phone,
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    tooltip: _obscurePassword ? 'Show password' : 'Hide password',
-                    icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  if (!value.contains(RegExp('[A-Z]'))) {
-                    return 'Password must contain at least one uppercase letter';
-                  }
-                  if (!value.contains(RegExp('[0-9]'))) {
-                    return 'Password must contain at least one number';
-                  }
-                  return null;
-                },
+                label: 'Password',
+                icon: Icons.lock,
+                obscureText: true,
+                togglable: true,
+                validator: Validators.password,
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
+              LabeledTextField(
                 controller: _confirmController,
-                obscureText: _obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    tooltip: _obscureConfirm ? 'Show password' : 'Hide password',
-                    icon: Icon(_obscureConfirm ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                  ),
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+                label: 'Confirm Password',
+                icon: Icons.lock_outline,
+                obscureText: true,
+                togglable: true,
+                validator: (String? v) =>
+                    Validators.confirmPassword(v, _passwordController.text),
               ),
               const SizedBox(height: 32),
 
-              ElevatedButton.icon(
+              ElevatedButton(
                 onPressed: _goToNextPage,
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Next'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
+                child: const Text('Next'),
               ),
             ],
           ),

@@ -12,7 +12,7 @@ class UserData {
   final String name;
   final String email;
   final String phone;
-  final String age;
+  final int age;
   final String gender;
   final String country;
   final String bio;
